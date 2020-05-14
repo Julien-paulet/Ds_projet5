@@ -26,6 +26,7 @@ class prepData:
         #"""This function is not implemented yet, still in build"""
         #pass
 # # Class Clustering
+
 class clustering:
     """Class for clustering"""
     def elbowMethod(data, x_scaled, min_clust, max_clust, random_s=42):
@@ -46,6 +47,7 @@ class clustering:
         plt.title('The Elbow Method showing the optimal k')
         plt.show()
         distortions = pd.DataFrame(silouhette, index=index_, columns=['coef'])
+
     def silhouette(data, x_scaled, min_clust, max_clust, random_s=42):
         """Function that computes the silhouette coef for a given numbers of clusters. \n
         Print a scatter plot of each coef in function of the coef.
@@ -75,6 +77,7 @@ class clustering:
         ax.xaxis.set_major_locator(plt.MaxNLocator(integer=True))
         plt.show()
         return silouhette_coef
+
     def makeClustering(data, x_scaled, coef, random_s=42, algo='kmeans', epsilon=0.5):
         """Clustering function, user can choose the algo that He wants. \n
         Available algo : Kmeans, Hierarchical (in build), Db_scan
@@ -101,10 +104,12 @@ class clustering:
         if algo == 'db_scan':
             data_clust = clustering.db_scanClustering(data, x_scaled, random_s, epsilon, coef)
         return data_clust
+
     def grouping(data_clust):
         """This function only groups the dataframe, by mean. Usefull for the radar plot"""
         data_grouped = data_clust.groupby('Clusters').mean()
         return data_grouped
+
     def kmeansClustering(data, x_scaled, clust, random_s):
         """This function performs a clustering with kmeans algorithm. \n
         Warning : This function will use all of your CPU hearts by default."""
@@ -115,6 +120,7 @@ class clustering:
         #Merge on our main dataframe for better vizualisation of the clusters
         data_clust = pd.merge(data, kmeans, left_index=True, right_index=True, how='left')
         return data_clust
+
     def db_scanClustering(data, x_scaled, random_s, epsilon, mini_sample):
         """This function performs a clustering with kmeans algorithm
         Warning : This function will use all of your CPU hearts by default."""
@@ -141,6 +147,7 @@ class plotClustering:
             except NameError:
                 print('Missing the path for saving')
         plt.show()
+
     def plotBoxplot(data_clust, save=False, *args):
         """Function to plot the boxplot"""
         sous_echantillon = data_clust.copy()
@@ -154,7 +161,7 @@ class plotClustering:
             medianprops = {'color':"black"}
             meanprops = {'marker':'o', 'markeredgecolor':'black',
                          'markerfacecolor':'firebrick'}
-            plt.figure(figsize=[8, 20])
+            plt.figure(figsize=[10, 10])
             plt.boxplot(groupes, labels=modalites, showfliers=False, medianprops=medianprops,
                         vert=False, patch_artist=True, showmeans=True, meanprops=meanprops)
             plt.title("Boxplot")
@@ -167,6 +174,7 @@ class plotClustering:
                     print('Missing the path for saving')
             #display the plot
             plt.show()
+   
     def plotRadarPlot(data_grouped, save=False, *args):
         """Function to plot the complex radar plot. \n
         Most of the code was found here : \n
@@ -192,6 +200,7 @@ class plotClustering:
                 except NameError:
                     print('Missing the path for saving')
             plt.show()
+
 def findRanges(data_grouped):
     """Function to find the ranges of variables
     (used for radar plot only)"""
@@ -200,10 +209,12 @@ def findRanges(data_grouped):
         theRange = (data_grouped[i].min(), data_grouped[i].max())
         ranges.append(theRange)
     return ranges
+
 def _invert(x, limits):
     """inverts a value x on a scale from
     limits[0] to limits[1]"""
     return limits[1] - (x - limits[0])
+
 def _scale_data(data_grouped, ranges):
     """scales data[1:] to ranges[0],
     inverts if the scale is reversed"""
@@ -219,6 +230,7 @@ def _scale_data(data_grouped, ranges):
             y1, y2 = y2, y1
         sdata.append((d-y1) / (y2-y1) * (x2 - x1) + x1)
     return sdata
+
 def set_rgrids(self, radii, labels=None, angle=None, fmt=None,
                **kwargs):
     """Set the radial locations and labels of the *r* grids.
@@ -272,12 +284,13 @@ class ComplexRadar:
         self.angle = np.deg2rad(np.r_[angles, angles[0]])
         self.ranges = ranges
         self.ax = axes[0]
+
     def plot(self, data_grouped, *args, **kw):
         """Add the data to the radar"""
         sdata = _scale_data(data_grouped, self.ranges)
         self.ax.plot(self.angle, np.r_[sdata, sdata[0]], *args, **kw)
+
     def fill(self, data_grouped, *args, **kw):
         """Fill the radar plot"""
         sdata = _scale_data(data_grouped, self.ranges)
         self.ax.fill(self.angle, np.r_[sdata, sdata[0]], *args, **kw)
-        
